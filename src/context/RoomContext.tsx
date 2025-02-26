@@ -8,7 +8,7 @@ import { addPeerAction, removePeerAction } from "./PeerActions";
 import { getQoSStats, metrics } from "../utils/collectQoS";
 import toast from "react-hot-toast";
 
-const WS = "http://localhost:8080";
+const WS = process.env.REACT_APP_API_URL;
 
 export const RoomContext = createContext<null | any>(null);
 
