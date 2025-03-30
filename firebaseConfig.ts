@@ -3,12 +3,12 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from 'firebase/firestore/lite';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyD-a-bcwGNmahzuH47B6lyGDSmCvdW4JHU",
-  authDomain: "tesis-1e8d3.firebaseapp.com",
-  projectId: "tesis-1e8d3",
-  storageBucket: "tesis-1e8d3.firebasestorage.app",
-  messagingSenderId: "1096407588878",
-  appId: "1:1096407588878:web:a5025098e66ed7d4abdc5f"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSANGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID
 };
 
 // Initialize Firebase

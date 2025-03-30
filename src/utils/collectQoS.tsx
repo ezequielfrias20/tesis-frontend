@@ -177,10 +177,7 @@ export async function metrics(
   roomId: string
 ) {
   console.log(
-    " ===== Recolección de estadísticas iniciada, tardara 5 minutos en completarse. ====="
-  );
-  let previousBytesReceived = 0;
-  let previousTimestamp = 0;
+    " ===== Recolección de estadísticas iniciada, tardara 5 minutos en completarse. =====")
   // const collectMetrics = () => {
     peerConnection
       .getStats(null)
@@ -199,7 +196,11 @@ export async function metrics(
           roundTripTimeAudio: 0,
         };
         const metrics = {
-          jitter: null,         // en segundos (convertir a ms)
+          jitterVideo: 0,
+          jitterAudio: 0, // en segundos (convertir a ms)
+          roundTripTimeVideo: 0,
+          roundTripTimeAudio: 0,
+                  
           packetLossRate: null, // en porcentaje (0-100)
           rtt: null,            // roundTripTime en segundos (convertir a ms)
           throughput: null      // en bits/segundo
@@ -215,11 +216,6 @@ export async function metrics(
                 bytesReceivedVideo: report?.bytesReceived ?? 0,
               };
             }
-            // Delay (Round Trip Time - RTT)
-            if (report.type === 'candidate-pair') {
-              // metrics.rtt = report.roundTripTime * 1000; // Convertir a ms
-              console.log("jjjjj: ",report )
-            }
             if (report.type === "outbound-rtp") {
               currentReport = {
                 ...currentReport,
@@ -230,6 +226,8 @@ export async function metrics(
               currentReport = {
                 ...currentReport,
                 roundTripTimeVideo: report?.roundTripTime ?? 0,
+                packetsLostVideo: report?.packetsLost ?? 0,
+                jitterVideo: report?.jitter ?? 0,
                 // jitterVideo: report?.jitter ?? 0,
               };
             }
@@ -260,7 +258,7 @@ export async function metrics(
         });
         if ("connection" in navigator) {
           const connection = navigator.connection as NetworkInformation;
-          console.log("[DATOS]: ", metrics);
+          // console.log("[DATOS]: ", currentReport);
           // createMetrics({
           //   ...currentReport,`
           //   networkType: connection?.effectiveType ?? "N/A",
