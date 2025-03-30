@@ -7,7 +7,7 @@ import VideocamOutlinedIcon from "@mui/icons-material/VideocamOutlined";
 import VideocamOffOutlinedIcon from "@mui/icons-material/VideocamOffOutlined";
 import MicNoneOutlinedIcon from "@mui/icons-material/MicNoneOutlined";
 import MicOffOutlinedIcon from "@mui/icons-material/MicOffOutlined";
-import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
+import PostAddOutlinedIcon from "@mui/icons-material/PostAddOutlined";
 
 const Room = () => {
   const { id } = useParams();
@@ -22,7 +22,7 @@ const Room = () => {
     toggleMic,
     cameraOn,
     micOn,
-    handleCollectData
+    handleCollectData,
   } = useRoom();
 
   const [totalPeers, setTotalPeers] = useState<any[]>([]);
@@ -60,7 +60,7 @@ const Room = () => {
       )} */}
       <div
         // className={`grid ${getGridClasses()} gap-1 flex-grow overflow-hidden p-6`}
-        className= "flex justify-center items-center gap-10 w-full h-full flex-row flex-grow flex-wrap"
+        className="flex justify-center items-center gap-10 w-full h-full flex-row flex-grow flex-wrap"
       >
         <VideoPlayer stream={stream} />
         {totalPeers.map((peer) => (
@@ -88,7 +88,10 @@ const Room = () => {
         </button>
         <button
           onClick={handleCollectData}
-          className={"p-2 text-white rounded-full hover:bg-gray-600 transition " + `${isCollectingData ? "bg-red-400" : "bg-gray-800"}`}
+          className={
+            "p-2 text-white rounded-full hover:bg-gray-600 transition " +
+            `${isCollectingData ? "bg-red-400" : "bg-gray-800"}`
+          }
         >
           {<PostAddOutlinedIcon />}
         </button>

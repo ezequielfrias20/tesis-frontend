@@ -1,5 +1,5 @@
 import { QoSData } from "../interfaces/QosMetrics";
-import { createMetrics } from "../repositories/metrics";
+import { createMetric } from "../repositories/metric";
 
 type RTPStats = {
   timestamp?: number;
@@ -182,88 +182,91 @@ export async function metrics(
     peerConnection
       .getStats(null)
       .then((stats) => {
-        let currentReport = {
+        let metrics: any = {
+          timestamp: 0,
           jitterVideo: 0,
-          // jitterVideo2: 0,
-          packetsLostVideo: 0,
-          bytesReceivedVideo: 0,
-          bytesSentVideo: 0,
-          roundTripTimeVideo: 0,
           jitterAudio: 0,
+          roundTripTimeVideo: 0, // rtt es el doble del delay
+          roundTripTimeAudio: 0,
+          packetsLostVideo: 0,
           packetsLostAudio: 0,
-          bytesReceivedAudio: 0,
+          packetsReceivedVideo: 0,
+          packetsReceivedAudio: 0,
+          bytesSentVideo: 0,
           bytesSentAudio: 0,
-          roundTripTimeAudio: 0,
-        };
-        const metrics = {
-          jitterVideo: 0,
-          jitterAudio: 0, // en segundos (convertir a ms)
-          roundTripTimeVideo: 0,
-          roundTripTimeAudio: 0,
-                  
-          packetLossRate: null, // en porcentaje (0-100)
-          rtt: null,            // roundTripTime en segundos (convertir a ms)
-          throughput: null      // en bits/segundo
+          bytesReceivedVideo: 0,
+          bytesReceivedAudio: 0,
+          bytesReceived: 0,
+          bytesSent: 0,
+          availableOutgoingBitrate: 0 // Ancho de banda permitido 
         };
         stats.forEach((report: any) => {
-          console.log(`[${report.type}]: `,report)
+          
+          if (report.type === "candidate-pair") {
+            console.log(report)
+            metrics = {
+              ...metrics,
+              bytesReceived: report?.bytesReceived ?? 0,
+              bytesSent: report?.bytesSent ?? 0,
+              availableOutgoingBitrate: report?.availableOutgoingBitrate ?? 0,
+            };
+          }
           if (report.kind === "video") {
             if (report.type === "inbound-rtp") {
-              currentReport = {
-                ...currentReport,
-                jitterVideo: report?.jitter ?? 0,
+              metrics = {
+                ...metrics,
+                jitterVideo: report?.jitter * 1000, // (ms)
                 packetsLostVideo: report?.packetsLost ?? 0,
                 bytesReceivedVideo: report?.bytesReceived ?? 0,
+                timestamp: report?.timestamp ?? 0,
+                packetsReceivedVideo: report?.packetsReceived ?? 0,
               };
             }
             if (report.type === "outbound-rtp") {
-              currentReport = {
-                ...currentReport,
+              metrics = {
+                ...metrics,
                 bytesSentVideo: report?.bytesSent ?? 0,
               };
             }
             if (report.type === "remote-inbound-rtp") {
-              currentReport = {
-                ...currentReport,
-                roundTripTimeVideo: report?.roundTripTime ?? 0,
-                packetsLostVideo: report?.packetsLost ?? 0,
-                jitterVideo: report?.jitter ?? 0,
-                // jitterVideo: report?.jitter ?? 0,
+              metrics = {
+                ...metrics,
+                roundTripTimeVideo: report?.roundTripTime * 1000, // ms
               };
             }
           }
           if (report.kind === "audio") {
             if (report.type === "inbound-rtp") {
-              currentReport = {
-                ...currentReport,
-                jitterAudio: report?.jitter ?? 0,
+              metrics = {
+                ...metrics,
+                jitterAudio: report?.jitter * 1000, // (ms)
                 packetsLostAudio: report?.packetsLost ?? 0,
                 bytesReceivedAudio: report?.bytesReceived ?? 0,
+                packetsReceivedAudio: report?.packetsReceived ?? 0,
               };
             }
             if (report.type === "outbound-rtp") {
-              currentReport = {
-                ...currentReport,
+              metrics = {
+                ...metrics,
                 bytesSentAudio: report?.bytesSent ?? 0,
               };
             }
             if (report.type === "remote-inbound-rtp") {
-              currentReport = {
-                ...currentReport,
-                roundTripTimeAudio: report?.roundTripTime ?? 0,
-                // jitterAudio: report?.jitter ?? 0,
+              metrics = {
+                ...metrics,
+                roundTripTimeAudio: report?.roundTripTime * 1000, // Ya se encuentra en ms
               };
             }
           }
         });
         if ("connection" in navigator) {
           const connection = navigator.connection as NetworkInformation;
-          // console.log("[DATOS]: ", currentReport);
-          // createMetrics({
-          //   ...currentReport,`
-          //   networkType: connection?.effectiveType ?? "N/A",
-          //   roomId,
-          // });
+          console.log("[DATOS]: ", metrics);
+          createMetric({
+            ...metrics,
+            networkType: connection?.effectiveType ?? "N/A",
+            roomId,
+          });
         } else {
           console.log(
             "La Network Information API no es compatible con este navegador."

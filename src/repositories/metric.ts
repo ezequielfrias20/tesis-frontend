@@ -1,14 +1,13 @@
+import { db } from '../config/firebaseConfig';
 import {
     addDoc,
     collection,
     getDocs,
   } from 'firebase/firestore';
 
-  import { db } from '../../firebaseConfig'
-
-  const collectionName = 'wells'
+  const collectionName = 'metrics'
   
-  export const getWells = async () => {
+  export const getMetrics = async () => {
     const list = [] as any;
     const querySnapshot = await getDocs(collection(db, collectionName));
     querySnapshot.forEach((doc) => {
@@ -20,13 +19,12 @@ import {
     return list;
   };
 
-  export const createWell = async (payload: any) => {
+  export const createMetric = async (payload: any) => {
     try {
-        const docRef = await addDoc(collection(db, collectionName), payload);
-    
-        return docRef.id;
-      } catch (e) {
-        console.error('Error adding document: ', e);
-      }
-  
+      const docRef = await addDoc(collection(db, collectionName), payload);
+      return docRef.id;
+    } catch (e) {
+      console.error('Error adding document: ', e);
+      throw e; // Re-lanza el error para manejo superior
+    }
   };
