@@ -174,18 +174,20 @@ export async function collectQoSStats(
 
 export async function metrics(
   peerConnection: RTCPeerConnection,
-  handleClose: () => void,
   roomId: string
 ) {
   console.log(
     " ===== Recolección de estadísticas iniciada, tardara 5 minutos en completarse. ====="
   );
-  const collectMetrics = () => {
+  let previousBytesReceived = 0;
+  let previousTimestamp = 0;
+  // const collectMetrics = () => {
     peerConnection
       .getStats(null)
       .then((stats) => {
         let currentReport = {
           jitterVideo: 0,
+          // jitterVideo2: 0,
           packetsLostVideo: 0,
           bytesReceivedVideo: 0,
           bytesSentVideo: 0,
@@ -196,8 +198,14 @@ export async function metrics(
           bytesSentAudio: 0,
           roundTripTimeAudio: 0,
         };
-        const datos = [] as any;
+        const metrics = {
+          jitter: null,         // en segundos (convertir a ms)
+          packetLossRate: null, // en porcentaje (0-100)
+          rtt: null,            // roundTripTime en segundos (convertir a ms)
+          throughput: null      // en bits/segundo
+        };
         stats.forEach((report: any) => {
+          console.log(`[${report.type}]: `,report)
           if (report.kind === "video") {
             if (report.type === "inbound-rtp") {
               currentReport = {
@@ -206,6 +214,11 @@ export async function metrics(
                 packetsLostVideo: report?.packetsLost ?? 0,
                 bytesReceivedVideo: report?.bytesReceived ?? 0,
               };
+            }
+            // Delay (Round Trip Time - RTT)
+            if (report.type === 'candidate-pair') {
+              // metrics.rtt = report.roundTripTime * 1000; // Convertir a ms
+              console.log("jjjjj: ",report )
             }
             if (report.type === "outbound-rtp") {
               currentReport = {
@@ -217,15 +230,15 @@ export async function metrics(
               currentReport = {
                 ...currentReport,
                 roundTripTimeVideo: report?.roundTripTime ?? 0,
+                // jitterVideo: report?.jitter ?? 0,
               };
             }
           }
           if (report.kind === "audio") {
-            datos.push(report);
             if (report.type === "inbound-rtp") {
               currentReport = {
                 ...currentReport,
-                // jitterAudio: report?.jitter ?? 0,
+                jitterAudio: report?.jitter ?? 0,
                 packetsLostAudio: report?.packetsLost ?? 0,
                 bytesReceivedAudio: report?.bytesReceived ?? 0,
               };
@@ -240,16 +253,16 @@ export async function metrics(
               currentReport = {
                 ...currentReport,
                 roundTripTimeAudio: report?.roundTripTime ?? 0,
-                jitterAudio: report?.jitter ?? 0,
+                // jitterAudio: report?.jitter ?? 0,
               };
             }
           }
         });
         if ("connection" in navigator) {
           const connection = navigator.connection as NetworkInformation;
-          console.log("[DATOS]: ", datos);
+          console.log("[DATOS]: ", metrics);
           // createMetrics({
-          //   ...currentReport,
+          //   ...currentReport,`
           //   networkType: connection?.effectiveType ?? "N/A",
           //   roomId,
           // });
@@ -261,8 +274,8 @@ export async function metrics(
       })
       .catch((err) => console.error("Error getting stats:", err));
     // });
-  };
-  setInterval(collectMetrics, 5000); // Recolecta estadísticas cada 5 segundos
+  // };
+  // setInterval(collectMetrics, 5000); // Recolecta estadísticas cada 5 segundos
 
   // setTimeout(() => {
   //   clearInterval(intervalId); // Detiene el intervalo al alcanzar los 5 minutos

@@ -7,6 +7,7 @@ import VideocamOutlinedIcon from "@mui/icons-material/VideocamOutlined";
 import VideocamOffOutlinedIcon from "@mui/icons-material/VideocamOffOutlined";
 import MicNoneOutlinedIcon from "@mui/icons-material/MicNoneOutlined";
 import MicOffOutlinedIcon from "@mui/icons-material/MicOffOutlined";
+import PostAddOutlinedIcon from '@mui/icons-material/PostAddOutlined';
 
 const Room = () => {
   const { id } = useParams();
@@ -21,6 +22,7 @@ const Room = () => {
     toggleMic,
     cameraOn,
     micOn,
+    handleCollectData
   } = useRoom();
 
   const [totalPeers, setTotalPeers] = useState<any[]>([]);
@@ -77,6 +79,18 @@ const Room = () => {
           className="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-600 transition"
         >
           {!micOn ? <MicOffOutlinedIcon /> : <MicNoneOutlinedIcon />}
+        </button>
+        <button
+          onClick={toggleMic}
+          className="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-600 transition"
+        >
+          {!micOn ? <MicOffOutlinedIcon /> : <MicNoneOutlinedIcon />}
+        </button>
+        <button
+          onClick={handleCollectData}
+          className={"p-2 text-white rounded-full hover:bg-gray-600 transition " + `${isCollectingData ? "bg-red-400" : "bg-gray-800"}`}
+        >
+          {<PostAddOutlinedIcon />}
         </button>
       </div>
     </div>
