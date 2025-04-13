@@ -266,6 +266,7 @@ export async function metrics(
             ...metrics,
             networkType: connection?.effectiveType ?? "N/A",
             roomId,
+            date: new Date().toISOString(),
           });
         } else {
           console.log(
