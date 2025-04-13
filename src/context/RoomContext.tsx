@@ -92,7 +92,7 @@ export const RoomProvider = ({ children }: any) => {
         if (callPeerConnection?.call && callPeerConnection?.roomId) {
           metrics(callPeerConnection.call, callPeerConnection.roomId);
         }
-      }, 5000); // Recolecta estadísticas cada 5 segundos
+      }, 2000); // Recolecta estadísticas cada 2 segundos
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);

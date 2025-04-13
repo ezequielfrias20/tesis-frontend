@@ -1,5 +1,8 @@
 import { QoSData } from "../interfaces/QosMetrics";
 import { createMetric } from "../repositories/metric";
+import {
+  serverTimestamp
+} from 'firebase/firestore';
 
 type RTPStats = {
   timestamp?: number;
@@ -181,7 +184,7 @@ export async function metrics(
   // const collectMetrics = () => {
     peerConnection
       .getStats(null)
-      .then((stats) => {
+      .then(async (stats) => {
         let metrics: any = {
           timestamp: 0,
           jitterVideo: 0,
@@ -198,10 +201,10 @@ export async function metrics(
           bytesReceivedAudio: 0,
           bytesReceived: 0,
           bytesSent: 0,
-          availableOutgoingBitrate: 0 // Ancho de banda permitido 
+          availableOutgoingBitrate: 0, // Ancho de banda permitido 
+          time: 0,
         };
         stats.forEach((report: any) => {
-          
           if (report.type === "candidate-pair") {
             console.log(report)
             metrics = {
@@ -261,13 +264,15 @@ export async function metrics(
         });
         if ("connection" in navigator) {
           const connection = navigator.connection as NetworkInformation;
-          console.log("[DATOS]: ", metrics);
-          createMetric({
+          const payload = {
             ...metrics,
             networkType: connection?.effectiveType ?? "N/A",
             roomId,
             date: new Date().toISOString(),
-          });
+            time: serverTimestamp(),
+          }
+          console.log("[DATOS]: ", payload);
+          await createMetric(payload);
         } else {
           console.log(
             "La Network Information API no es compatible con este navegador."
