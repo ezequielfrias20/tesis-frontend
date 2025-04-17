@@ -15,6 +15,7 @@ import { peersReducer } from "./PeerReducer";
 import { addPeerAction, removePeerAction } from "./PeerActions";
 import { getQoSStats, metrics } from "../utils/collectQoS";
 import toast from "react-hot-toast";
+import { set } from "lodash";
 
 const WS = process.env.REACT_APP_API_URL;
 
@@ -32,12 +33,15 @@ export const RoomProvider = ({ children }: any) => {
   const [cameraOn, setCameraOn] = useState(true);
   const [micOn, setMicOn] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [callPeerConnection, setCallPeerConnection] = useState<any | null>(
     null
   );
 
+  const changeLoading = (loading: boolean) => {setIsLoading(loading)};
   const enterRoom = ({ roomId }: any) => {
+    changeLoading(false);
     navigate(`/room/${roomId}`);
   };
 
@@ -199,7 +203,9 @@ export const RoomProvider = ({ children }: any) => {
       toggleMic,
       cameraOn,
       micOn,
-      handleCollectData
+      isLoading,
+      handleCollectData,
+      changeLoading,
     }),
     [
       ws,
@@ -212,6 +218,7 @@ export const RoomProvider = ({ children }: any) => {
       toggleMic,
       cameraOn,
       micOn,
+      isLoading
     ]
   );
 

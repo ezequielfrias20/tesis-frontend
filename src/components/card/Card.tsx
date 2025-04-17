@@ -7,10 +7,11 @@ import MicOffOutlinedIcon from "@mui/icons-material/MicOffOutlined";
 
 const FloatingVideoCallCard = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const { cameraOn, micOn, stream, toggleCamera, toggleMic, ws } = useRoom();
+  const { cameraOn, micOn, stream, toggleCamera, toggleMic, ws, changeLoading } = useRoom();
   const [name, setName] = useState("");
 
   const createRoom = () => {
+    changeLoading(true);
     ws.emit("create-room", {
       name,
     });
@@ -23,8 +24,8 @@ const FloatingVideoCallCard = () => {
   }, [stream]);
 
   return (
-    <div className="flex justify-center items-center h-screen bg-white w-5/6">
-      <div className="h-5/6 bg-white rounded-2xl p-6 shadow-xl transform transition duration-300 hover:-translate-y-2 hover:shadow-2xl w-full flex">
+    <div className="flex justify-center items-center h-screen bg-gray-900 w-5/6">
+      <div className="h-5/6 bg-gray-800 rounded-2xl p-6 shadow-xl transform transition duration-300 hover:-translate-y-2 hover:shadow-2xl w-full flex">
         {/* Lado de la Cámara */}
         <div className="w-1/2 flex flex-col items-center ">
           <video
@@ -35,7 +36,7 @@ const FloatingVideoCallCard = () => {
           <div className="flex gap-4 mt-4 ">
             <button
               onClick={toggleCamera}
-              className="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-600 transition"
+              className="p-2 bg-gray-700 text-white rounded-full hover:bg-gray-600 transition"
             >
               {!cameraOn ? (
                 <VideocamOffOutlinedIcon />
@@ -45,7 +46,7 @@ const FloatingVideoCallCard = () => {
             </button>
             <button
               onClick={toggleMic}
-              className="p-2 bg-gray-800 text-white rounded-full hover:bg-gray-600 transition"
+              className="p-2 bg-gray-700 text-white rounded-full hover:bg-gray-600 transition"
             >
               {!micOn ? <MicOffOutlinedIcon /> : <MicNoneOutlinedIcon />}
             </button>
@@ -54,7 +55,7 @@ const FloatingVideoCallCard = () => {
 
         {/* Lado de Input para la Videollamada */}
         <div className="w-1/2 flex flex-col justify-center items-center border-gray-200 pl-6">
-          <h2 className="text-xl font-bold text-gray-800 mb-2">
+          <h2 className="text-xl font-bold text-white mb-2">
             Unirse a la Videollamada
           </h2>
           <input
