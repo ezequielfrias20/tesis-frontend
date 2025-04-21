@@ -168,7 +168,7 @@ export const RoomProvider = ({ children }: any) => {
         call.on("stream", (peerStream) => {
           console.log("Recibiendo Video del anfitrion...", { roomId });
           dispatch(addPeerAction(peerId, peerStream));
-          setCallPeerConnection({ call: call.peerConnection, roomId: roomIdUser } as any);
+          setCallPeerConnection({ call: call.peerConnection, roomId } as any);
           // toast.success("Recolectando datos!")
           // metrics(call.peerConnection, () => {
           //   setIsCollectingData(false);
