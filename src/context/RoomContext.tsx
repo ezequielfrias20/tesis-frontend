@@ -93,7 +93,9 @@ export const RoomProvider = ({ children }: any) => {
       
       // Pasamos la función correctamente sin ejecutarla inmediatamente
       intervalRef.current = setInterval(() => {
+        console.log("Recolectando datos...");
         if (callPeerConnection?.call && callPeerConnection?.roomId) {
+          console.log("Entro", callPeerConnection?.call && callPeerConnection?.roomId);
           metrics(callPeerConnection.call, callPeerConnection.roomId);
         }
       }, 2000); // Recolecta estadísticas cada 2 segundos
