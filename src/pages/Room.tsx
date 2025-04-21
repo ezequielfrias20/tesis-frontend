@@ -28,6 +28,7 @@ const Room = () => {
   const [totalPeers, setTotalPeers] = useState<any[]>([]);
 
   useEffect(() => {
+    console.log("Conectando a la sala: ", id);
     if (me) ws.emit("join-room", { roomId: id, peerId: me._id });
   }, [id, ws, me]);
 
@@ -38,15 +39,6 @@ const Room = () => {
   // Calcular el número total de streams (incluye el propio)
   const totalStreams = totalPeers.length + 1;
 
-  // Determinar las clases de columnas y filas basadas en el número total de streams
-  const getGridClasses = () => {
-    if (totalStreams === 1) return "grid-cols-1 grid-rows-1";
-    if (totalStreams === 2) return "grid-cols-2 grid-rows-1";
-    if (totalStreams <= 4) return "grid-cols-2 grid-rows-2";
-    if (totalStreams <= 6) return "grid-cols-3 grid-rows-2";
-    if (totalStreams <= 9) return "grid-cols-3 grid-rows-3 rounded-lg";
-    return "grid-cols-4 grid-rows-3";
-  };
 
   return (
     <div className="flex flex-col h-screen bg-gray-900 text-white">
