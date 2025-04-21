@@ -34,6 +34,7 @@ export const RoomProvider = ({ children }: any) => {
   const [micOn, setMicOn] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [roomIdUser, setRoomIdUser] = useState(null);
 
   const [callPeerConnection, setCallPeerConnection] = useState<any | null>(
     null
@@ -42,6 +43,7 @@ export const RoomProvider = ({ children }: any) => {
   const changeLoading = (loading: boolean) => {setIsLoading(loading)};
   const enterRoom = ({ roomId }: any) => {
     changeLoading(false);
+    setRoomIdUser(roomId);
     navigate(`/room/${roomId}`);
   };
 
@@ -158,14 +160,15 @@ export const RoomProvider = ({ children }: any) => {
     if (!me) return;
     if (!stream) return;
 
-    ws.on("user-joined", ({ peerId, roomId }) => {
-      console.log("[user-joined]: ", { peerId, roomId });
+    ws.on("user-joined", (params) => {
+      console.log("[user-joined]: ", params);
+      const { roomId, peerId } = params;
       setTimeout(() => {
         const call = me.call(peerId, stream);
         call.on("stream", (peerStream) => {
-          console.log("Recibiendo Video del anfitrion...", roomId);
+          console.log("Recibiendo Video del anfitrion...", { roomId });
           dispatch(addPeerAction(peerId, peerStream));
-          setCallPeerConnection({ call: call.peerConnection, roomId } as any);
+          setCallPeerConnection({ call: call.peerConnection, roomId: roomIdUser } as any);
           // toast.success("Recolectando datos!")
           // metrics(call.peerConnection, () => {
           //   setIsCollectingData(false);
@@ -198,6 +201,7 @@ export const RoomProvider = ({ children }: any) => {
       me,
       stream,
       peers,
+      roomIdUser,
       shareScreen,
       isCollectingData,
       toggleCamera,
@@ -219,7 +223,8 @@ export const RoomProvider = ({ children }: any) => {
       toggleMic,
       cameraOn,
       micOn,
-      isLoading
+      isLoading,
+      roomIdUser
     ]
   );
 
