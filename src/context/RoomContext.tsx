@@ -163,7 +163,7 @@ export const RoomProvider = ({ children }: any) => {
       setTimeout(() => {
         const call = me.call(peerId, stream);
         call.on("stream", (peerStream) => {
-          console.log("Recibiendo Video del anfitrion...");
+          console.log("Recibiendo Video del anfitrion...", roomId);
           dispatch(addPeerAction(peerId, peerStream));
           setCallPeerConnection({ call: call.peerConnection, roomId } as any);
           // toast.success("Recolectando datos!")
