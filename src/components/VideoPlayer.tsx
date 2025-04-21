@@ -14,7 +14,6 @@ const VideoPlayer = ({ stream }: IParams) => {
   return (
     <video
       autoPlay
-      muted
       playsInline
       className="w-full h-full object-cover"
       ref={videoRef}
