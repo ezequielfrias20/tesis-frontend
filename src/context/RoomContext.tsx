@@ -159,7 +159,7 @@ export const RoomProvider = ({ children }: any) => {
     if (!stream) return;
 
     ws.on("user-joined", ({ peerId, roomId }) => {
-      console.log("[user-joined]: ", { peerId });
+      console.log("[user-joined]: ", { peerId, roomId });
       setTimeout(() => {
         const call = me.call(peerId, stream);
         call.on("stream", (peerStream) => {
